@@ -1,15 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState([]);
   const [search, setSearch] = useState("");
   const [enrolled, setEnrolled] = useState([]);
+  const router = useRouter(); // 👈 Add this
 
   useEffect(() => {
-    // ✅ Fetch courses from backend
     const fetchCourses = async () => {
       try {
         const res = await fetch("/api/courses");
@@ -22,7 +23,6 @@ export default function CoursesPage() {
 
     fetchCourses();
 
-    // ✅ Load enrolled from localStorage
     const enrolledCourses = JSON.parse(localStorage.getItem("enrolled")) || [];
     setEnrolled(enrolledCourses);
   }, []);
@@ -77,9 +77,14 @@ export default function CoursesPage() {
                 <p className="text-gray-600 mb-4">{course.description}</p>
 
                 <div className="flex gap-2">
-                  <button className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700">
+                  {/* ✅ Fixed View button */}
+                  <button
+                    className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
+                    onClick={() => router.push(`/courses/${course._id}`)}
+                  >
                     View
                   </button>
+
                   <button
                     onClick={() => handleEnroll(course._id)}
                     className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
